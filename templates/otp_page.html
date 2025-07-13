@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Verify OTP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 flex items-center justify-center h-screen">
+
+  <form method="post" class="bg-white shadow-md p-6 rounded-md space-y-4 w-full max-w-sm">
+    {% csrf_token %}
+    <h2 class="text-xl font-semibold text-center">OTP Verification</h2>
+
+    {% for message in messages %}
+      <div class="text-sm text-red-500 text-center">{{ message }}</div>
+    {% endfor %}
+
+    <input type="text" name="otp" placeholder="Enter OTP"
+      class="w-full border border-gray-300 px-3 py-2 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-black" required>
+
+    <button type="submit"
+      class="w-full bg-black text-white py-2 rounded hover:opacity-90 transition">Verify OTP</button>
+  </form>
+
+</body>
+</html>

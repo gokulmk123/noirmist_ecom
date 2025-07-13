@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+*.sqlite3
+*.log
+
+# Virtual Environment
+env/
+venv/
+
+# Django stuff
+*.pyc
+db.sqlite3
+*.pot
+*.py~ 
+*.swp
+*.bak
+*.tmp
+*.log
+*.pid
+*.seed
+
+# VS Code
+.vscode/
+
+# Environment variables
+.env
+
+# Migrations
+**/migrations/
+
+# OS files
+.DS_Store
+Thumbs.db
