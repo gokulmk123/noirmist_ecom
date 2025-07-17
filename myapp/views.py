@@ -1,11 +1,11 @@
 # views.py
 from django.shortcuts import render, redirect,get_object_or_404
 from django.contrib.auth import login,logout,get_backends
-from .forms import AdminLoginForm
+from .forms import AdminLoginForm,UserSignupForm,UserLoginForm
 from django.views.decorators.cache import never_cache
 from django.core.mail import send_mail
 from django.conf import settings
-from .forms import UserSignupForm,UserLoginForm
+
 from django.contrib import messages
 import random
 from . models import CustomUser,Product,Category,Brand,ProductImage,ProductVariant,banner
@@ -20,11 +20,13 @@ from django.core.paginator import Paginator
 
 @never_cache
 def admin_login_view(request):
-    if request.session.get('user'):
-        return redirect('home')
-
-    if request.session.get('adminuser'):
+    if request.user.is_authenticated and not request.user.is_superuser:
+        return redirect('user_login')
+    
+    if request.user.is_authenticated and request.user.is_superuser:
         return redirect('admin_dashboard')
+
+    
 
     if request.method == 'POST':
         form = AdminLoginForm(request.POST)
@@ -43,13 +45,6 @@ def admin_login_view(request):
     return render(request, 'admin_signin.html', {'form': form})
 
 @never_cache
-def admin_dashboard(request):
-    if request.session.get('user'):
-        return redirect('home')
-    if not request.session.get('adminuser'):
-        return redirect('admin_login')
-    return render(request, 'dashboard.html')
-@never_cache
 def admin_logout(request):
     if request.method == 'POST':
         logout(request)
@@ -57,111 +52,18 @@ def admin_logout(request):
         return redirect('admin_login')
 
 @never_cache
-def user_signup(request):
-    if request.session.get('adminuser'):
-        return redirect('admin_dashboard')
+def admin_dashboard(request):
     if request.session.get('user'):
         return redirect('home')
+    if not request.session.get('adminuser'):
+        return redirect('admin_login')
     
-    if request.method == 'POST':
-        form = UserSignupForm(request.POST)
-        if form.is_valid():
-            user = form.save(commit=False)
-            user.is_active = False  # deactivate until OTP is verified
-            user.set_password(form.cleaned_data['password'])
-            user.save()
-
-            # Generate OTP
-            otp = random.randint(100000, 999999)
-            request.session['otp'] = str(otp)
-            request.session['user_id'] = user.id
-
-            # Send OTP
-            send_mail(
-                subject='Noirmist - Your OTP Code',
-                message=f'Your OTP is {otp}',
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[user.email],
-                fail_silently=False,
-            )
-
-            return redirect('otp_verify')  # make sure this URL/view exists
-    else:
-        form = UserSignupForm()
-    
-    return render(request, 'usersignup.html', {'form': form})
-
-@never_cache
-def otp_verify(request):
-
-    if request.method == 'POST':
-        entered_otp = request.POST.get('otp')
-        original_otp = request.session.get('otp')
-        user_id = request.session.get('user_id')
-
-        if entered_otp == original_otp:
-            user = get_object_or_404(CustomUser, id=user_id)
-            user.is_active = True
-            user.save()
-
-            # Clear session after activation
-            del request.session['otp']
-            del request.session['user_id']
-
-            messages.success(request, "Your account has been activated. You can now log in.")
-            return redirect('user_login')  # You should have a login page/view
-
-        else:
-            messages.error(request, "Invalid OTP. Please try again.")
-            return redirect('otp_verify')
-
-    return render(request, 'otp_page.html')
-
-
-
-@never_cache
-def user_login(request):
-    if request.session.get('user'):
-        return redirect('home')
-    if request.session.get('adminuser'):
-        return redirect('admin_dashboard')
-    
-    if request.method == 'POST':
-        form = UserLoginForm(request.POST)
-        if form.is_valid() :
-            user = form.user
-            if user.is_superuser:
-                form.add_error(None, "Admins cannot log in here.") 
-            
+    total_customers = CustomUser.objects.filter(is_superuser=False).count()
         
-            else:
-                backends = get_backends()
-                user.backend = f"{backends[0].__module__}.{backends[0].__class__.__name__}"
-                login(request, user)
-                request.session['user'] = user.username
-                return redirect('home')
-
-    else:
-        form = UserLoginForm()
-    
-    return render(request, 'user_login.html', {'form': form})
-
-@never_cache
-def home(request):
-    if request.session.get('adminuser'):
-        return redirect('admin_dashboard')
-    if not request.session.get('user'):
-        return redirect('user_login')
-    return render(request,'home.html')
-
-@never_cache
-def user_logout(request):
-    
-    if request.method == 'POST':
-        logout(request)
-        request.session.flush()  # Clears session data
-        return redirect('user_login')
-
+    total_product= Product.objects.exclude(status='Listed').count()
+            
+    return render(request, 'dashboard.html',{
+        'key1':total_customers,'key2':total_product})
 
 
 @never_cache
@@ -212,7 +114,7 @@ def admin_product(request):
             Q(name__icontains=search_query) | Q(description__icontains=search_query)
         )
 
-    # ✅ Assign main image BEFORE pagination
+    #  Assign main image BEFORE pagination
     product_list = []
     for product in products:
         main_image = product.productimage_set.filter(is_main=True).first()
@@ -221,7 +123,7 @@ def admin_product(request):
         product.main_image = main_image
         product_list.append(product)
 
-    # ✅ Pagination
+    # Pagination
     paginator = Paginator(product_list, 10)  # 10 per page
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -322,13 +224,13 @@ def addproduct(request):
                 print('Variant error:', e)
 
         images = request.FILES.getlist('variantImages')
-        for img in images:
-               for idx, img in enumerate(images):
-                ProductImage.objects.create(
-                product_id=product,
-                image=img,
-                alt_text=f"{name} - Main",
-                is_main=(idx == 0)  
+        
+        for idx, img in enumerate(images):
+            ProductImage.objects.create(
+            product_id=product,
+            image=img,
+            alt_text=f"{name} - Main",
+            is_main=(idx == 0)  
             )
 
         messages.success(request, 'Product saved successfully.')

@@ -2,13 +2,13 @@
 
 {% block title %}Admin Products{% endblock %}
 
-{% block breadcrumb %}
-<div class="mb-4 text-gray-600 text-sm">
-  Admin &gt; <span class="text-gray-900 font-medium">Products</span>
-</div>
-{% endblock %}
+
 
 {% block content %}
+<div class="bg-gray-100 py-3 px-4 text-sm">
+    <a href="{% url 'admin_dashboard' %}" class="text-gray-500 hover:text-gray-700">Dashboard &gt;</a>
+    <span class="text-gray-800 font-semibold">Product</span>
+  </div>
 <div class="flex justify-between items-center mb-6 mt-10">
   <h2 class="text-xl font-semibold">Products</h2>
   <div class="flex items-center gap-4">

@@ -63,6 +63,10 @@ class Product(models.Model):
     
     class Meta:
         ordering =['created_at']
+    @property
+    def default_price(self):
+        first_variant = self.variants.first()
+        return first_variant.price if first_variant else None
 
     def __str__(self):
         return self.name
@@ -82,6 +86,7 @@ class ProductVariant(models.Model):
 class ProductImage(models.Model):
 
     product_id = models.ForeignKey(Product, on_delete=models.CASCADE)
+    variant = models.ForeignKey(ProductVariant, on_delete=models.CASCADE, null=True, blank=True, related_name='images')
     image = models.ImageField(upload_to='product_images/')
     alt_text = models.CharField(max_length=255)
     is_main = models.BooleanField(default=False)

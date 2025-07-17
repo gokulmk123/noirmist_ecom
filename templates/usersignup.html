@@ -33,13 +33,17 @@
   <!-- Signup Form -->
   <div class="flex justify-center items-center py-16 px-4">
     <div class="w-full max-w-sm">
-
+        {% load socialaccount %}
       <form method="post" class="bg-white p-6 rounded space-y-6 shadow-sm">
         {% csrf_token %}
-        {% load socialaccount %}
+       
 
         <!-- Google Sign-in -->
-        <a href="#" class="flex items-center justify-center gap-3 bg-white text-gray-800 border border-gray-300 rounded px-4 py-2 hover:bg-gray-50 shadow-sm w-full">
+
+      
+
+        <a href="{% provider_login_url 'google' %}"
+          class="flex items-center justify-center gap-3 bg-white text-gray-800 border border-gray-300 rounded px-4 py-2 hover:bg-gray-50 shadow-sm w-full">
           <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google Logo" class="w-5 h-5">
           <span>Continue with Google</span>
         </a>
@@ -49,6 +53,7 @@
           <span class="px-3 text-sm text-gray-500">OR</span>
           <hr class="w-full border-gray-300" />
         </div>
+       
         <!-- Username -->
         <div>
           <label class="block text-sm mb-1 font-medium text-gray-700">Name</label>
