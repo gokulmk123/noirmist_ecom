@@ -11,7 +11,7 @@
 <div class="p-6">
   <div class="text-sm text-gray-600 mb-4">Admin &gt; Banner Management</div>
 
-  <!-- Success/Error Messages -->
+ 
 {% if message.tags == 'error' %}
   <div class="mb-3 text-sm text-white px-4 py-2 rounded bg-red-500">
 {% else %}
@@ -20,7 +20,7 @@
     {{ message }}
   </div>
 
-  <!-- Filter and Sort (UI only) -->
+
   <div class="flex justify-between items-center mb-4">
     <div class="flex items-center space-x-2">
       <label for="sort">Sort</label>
@@ -36,13 +36,12 @@
     </div>
     <input type="text" placeholder="Filter" class="border rounded px-3 py-1" />
   </div>
-  <!-- Add Banner Button -->
+
   <div class="text-right">
     <button onclick="openBannerModal()" class="bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-700">+ Add Banner</button>
   </div>
 </div>
 
-  <!-- Existing Banners -->
   {% for banner in banners %}
   <div class="bg-indigo-100 p-4 mb-4 rounded shadow">
     <form method="post" enctype="multipart/form-data" class="grid grid-cols-1 md:grid-cols-6 gap-3 items-center">

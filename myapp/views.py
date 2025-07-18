@@ -432,7 +432,7 @@ def admin_banner(request):
             messages.error(request, 'Please fill in all required fields.')
             return redirect('admin_banner')
 
-        if banner_id:  # Update existing banner
+        if banner_id:  
             banner_obj = get_object_or_404(banner, id=banner_id)
             banner_obj.banner_name = banner_name
             banner_obj.start_date = start_date
@@ -442,7 +442,7 @@ def admin_banner(request):
                 banner_obj.banner_img = banner_img
             banner_obj.save()
             messages.success(request, 'Banner updated successfully.')
-        else:  # Add new banner
+        else:  
             banner.objects.create(
                 banner_name=banner_name,
                 banner_img=banner_img,

@@ -12,7 +12,7 @@
   
   <div class="max-w-6xl mx-auto px-4 md:flex gap-10">
     
-    <!-- Left Image Preview -->
+    
     <div class="w-full md:w-1/2">
       <div class="rounded-lg overflow-hidden">
         <img id="main-preview" 
@@ -31,7 +31,7 @@
       </div>
     </div>
 
-    <!-- Right Product Info -->
+    
     <div class="w-full md:w-1/2 mt-8 md:mt-0 space-y-5">
       <div class="flex gap-1 mt-2">
         {% for _ in "12345" %}
@@ -112,23 +112,23 @@
     </div>
 
   <script>
-    // Parse variant data
+    
     const variantData = JSON.parse('{{ variant_data_json|escapejs }}');
-    console.log('Variant Data:', variantData); // Debug: Check variant data in console
+    console.log('Variant Data:', variantData); 
 
-    // Update price, discount, stock, and form inputs when size changes
+   
     document.getElementById('size').addEventListener('change', function() {
       const selectedSize = this.value;
       const variant = variantData.find(v => v.size === selectedSize);
       if (variant) {
         document.getElementById('discounted-price').textContent = `₹${variant.discounted_price.toFixed(0)}`;
         document.getElementById('original-price').textContent = `₹${variant.price.toFixed(0)}`;
-        document.getElementById('discount-percent').textContent = `(10% OFF)`; // Fixed 10% discount
+        document.getElementById('discount-percent').textContent = `(10% OFF)`; 
         document.getElementById('stock').textContent = variant.stock;
         document.getElementById('quantity').max = variant.stock;
-        document.getElementById('quantity').value = 1; // Reset quantity
-        document.getElementById('selected-size').value = selectedSize; // Update form input
-        document.getElementById('selected-quantity').value = 1; // Update form quantity
+        document.getElementById('quantity').value = 1; 
+        document.getElementById('selected-size').value = selectedSize; 
+        document.getElementById('selected-quantity').value = 1;
       } else {
         console.error('Variant not found for size:', selectedSize);
       }

@@ -10,7 +10,7 @@
     {% csrf_token %}
     <h2 class="text-xl font-semibold text-center">OTP Verification</h2>
 
-    <!-- Countdown -->
+   
     <div id="countdown" class="text-center text-sm text-gray-500 font-medium">
       OTP expires in: <span id="timer">02:00</span>
     </div>
@@ -70,7 +70,7 @@
           if (data.success) {
             resendMsg.textContent = data.message;
 
-            // Reset countdown
+           
             timeLeft = 120;
             timerSpan.textContent = formatTime(timeLeft);
             resendBtn.disabled = true;

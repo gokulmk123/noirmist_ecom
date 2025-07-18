@@ -43,12 +43,12 @@
           </span>
         </td>
         <td class="py-2 px-4 space-x-2">
-          <!-- Toggle Status with Modal -->
+          
           <button onclick="openStatusModal({{ category.category_id }}, '{{ category.status }}')" class="text-blue-600 hover:underline">
             {% if category.status == 'Listed' %}Unlist{% else %}List{% endif %}
           </button>
 
-          <!-- Edit -->
+          
           <button onclick="openEditModal('{{ category.category_id }}', '{{ category.name }}', '{{ category.description }}')" class="text-yellow-600 hover:underline">Edit</button>
 
           <!-- Delete -->
@@ -95,7 +95,7 @@
   </div>
 </div>
 
-<!-- Add Modal -->
+
 <div id="categoryModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
   <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
     <h3 class="text-lg font-semibold mb-4">Add New Category</h3>
@@ -140,7 +140,7 @@
   </div>
 </div>
 
-<!-- Delete Confirmation Modal -->
+
 <div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
   <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-sm">
     <h3 class="text-lg font-semibold mb-4">Confirm Delete</h3>
@@ -152,7 +152,6 @@
   </div>
 </div>
 
-<!-- Status Confirmation Modal -->
 <div id="statusModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
   <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-sm">
     <h3 class="text-lg font-semibold mb-4" id="statusModalTitle">Confirm Action</h3>

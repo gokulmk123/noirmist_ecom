@@ -11,7 +11,7 @@
 
  
 
-  <!-- Navigation -->
+  
   <nav class="bg-white border-b py-4">
     <div class="max-w-7xl mx-auto flex items-center justify-between px-4">
       <div class="text-xl font-bold tracking-widest">NOIRMIST</div>
@@ -24,13 +24,13 @@
     </div>
   </nav>
 
-  <!-- Breadcrumb -->
+  
   <div class="bg-gray-100 py-3 px-4 text-sm">
     <span class="text-gray-500">NOIRMIST &gt;</span>
     <span class="text-gray-800 font-semibold">Sign up</span>
   </div>
 
-  <!-- Signup Form -->
+
   <div class="flex justify-center items-center py-16 px-4">
     <div class="w-full max-w-sm">
         {% load socialaccount %}
@@ -38,7 +38,7 @@
         {% csrf_token %}
        
 
-        <!-- Google Sign-in -->
+      
 
       
 
@@ -54,7 +54,7 @@
           <hr class="w-full border-gray-300" />
         </div>
        
-        <!-- Username -->
+        
         <div>
           <label class="block text-sm mb-1 font-medium text-gray-700">Name</label>
           <input type="text" name="username" placeholder="Enter your name"
@@ -64,7 +64,6 @@
           {% endif %}
         </div>
 
-        <!-- Email -->
         <div>
           <label class="block text-sm mb-1 font-medium text-gray-700">Email</label>
           <input type="email" name="email" placeholder="Enter your email"
@@ -74,7 +73,6 @@
           {% endif %}
         </div>
 
-        <!-- Password -->
         <div>
           <label class="block text-sm mb-1 font-medium text-gray-700">Password</label>
           <input type="password" name="password" placeholder="Enter your password"
@@ -84,7 +82,7 @@
           {% endif %}
         </div>
 
-        <!-- Mobile -->
+        
         <div>
           <label class="block text-sm mb-1 font-medium text-gray-700">Mobile</label>
           <input type="text" name="mobile" placeholder="Enter your mobile"
@@ -95,7 +93,7 @@
         </div>
 
 
-        <!-- Non-field Errors -->
+        
         {% if form.non_field_errors %}
           <ul class="text-sm text-red-600 list-disc list-inside mt-2">
             {% for error in form.non_field_errors %}
@@ -104,19 +102,19 @@
           </ul>
         {% endif %}
 
-        <!-- Terms -->
+       
         <p class="text-xs text-gray-500">
           By Creating An Account You Agree With Our 
           <a href="#" class="underline">Terms Of Service</a>, 
           <a href="#" class="underline">Privacy Policy</a>,
         </p>
 
-        <!-- Submit Button -->
+      
         <button type="submit" class="w-full bg-gray-900 text-white py-2 rounded hover:opacity-90 transition">
           Create account
         </button>
 
-        <!-- Login -->
+        
         <p class="text-center text-sm text-gray-600">
           Already have an account? <a href="{% url 'user_login' %}" class="underline text-black">Log in</a>
         </p>
@@ -125,16 +123,16 @@
     </div>
   </div>
 
-  <!-- Footer -->
+  
   <footer class="bg-gray-100 mt-16">
     <div class="max-w-7xl mx-auto px-6 py-10 grid grid-cols-2 md:grid-cols-4 gap-6 text-sm text-gray-700">
       <div>
         <h3 class="font-bold mb-2">NOIRMIST</h3>
         <p class="text-xs text-gray-500 mb-2">noirmist brings fragrances that reflect your essence.</p>
         <div class="flex space-x-3 text-lg">
-          <a href="#">📷</a>
-          <a href="#">🎥</a>
-          <a href="#">📘</a>
+          <a href="#"></a>
+          <a href="#"></a>
+          <a href="#"></a>
         </div>
       </div>
       <div>
@@ -162,7 +160,7 @@
         </ul>
         <h4 class="font-semibold mt-4 mb-2">Accepted Payments</h4>
         <div class="flex space-x-2 text-lg">
-          <span>💳</span><span>💳</span><span>💳</span>
+          
         </div>
       </div>
     </div>

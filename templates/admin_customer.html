@@ -9,7 +9,7 @@
     <a href="{% url 'admin_dashboard' %}" class="text-gray-500 hover:text-gray-700">Dashboard &gt;</a>
     <span class="text-gray-800 font-semibold">Customer</span>
   </div>
-<!-- search bar -->
+
 <form method="GET" class="mb-6 flex justify-end mt-10">
   <input type="text" name="q" placeholder="Search by name or email"
          value="{{ search_query }}"
@@ -20,7 +20,7 @@
   </button>
 </form>
 
-<!-- customer list table -->
+
 <div class="bg-white p-6 rounded-lg shadow mt-4">
   <h2 class="text-xl font-semibold mb-4">Customer List</h2>
   <table class="min-w-full table-auto text-sm">
@@ -45,7 +45,7 @@
           {% endif %}
         </td>
         <td>
-          <!-- trigger button -->
+          
           <button 
             type="button" 
             onclick="openModal('{{ user.id }}', '{{ user.is_active }}')" 
@@ -64,7 +64,7 @@
   </table>
 </div>
 
-<!-- Confirmation Modal -->
+
 <div id="confirmationModal" class="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center hidden">
   <div class="bg-white rounded-lg shadow-lg p-6 w-96">
     <h2 class="text-lg font-semibold mb-4">Confirm Action</h2>
@@ -82,7 +82,7 @@
   </div>
 </div>
 
-<!-- Pagination Controls -->
+
 {% if page_obj.has_other_pages %}
   <div class="mt-6 flex justify-center">
     <nav class="inline-flex -space-x-px text-sm">

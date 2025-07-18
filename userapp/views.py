@@ -37,16 +37,16 @@ def user_signup(request):
         form = UserSignupForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
-            user.is_active = False  # deactivate until OTP is verified
+            user.is_active = False 
             user.set_password(form.cleaned_data['password'])
             user.save()
 
-            # Generate OTP
+           
             otp = random.randint(100000, 999999)
             request.session['otp'] = str(otp)
             request.session['user_id'] = user.id
 
-            # Send OTP
+            
             send_mail(
                 subject='Noirmist - Your OTP Code',
                 message=f'Your OTP is {otp}',
@@ -55,7 +55,7 @@ def user_signup(request):
                 fail_silently=False,
             )
 
-            return redirect('otp_verify')  # make sure this URL/view exists
+            return redirect('otp_verify') 
     else:
         form = UserSignupForm()
     
@@ -72,7 +72,7 @@ def otp_verify(request):
         entered_otp = request.POST.get('otp')
         original_otp = request.session.get('otp')
         user_id = request.session.get('user_id')
-        purpose = request.session.get('otp_purpose')  # 'signup' or 'reset'
+        purpose = request.session.get('otp_purpose') 
 
         if entered_otp == original_otp:
             user = get_object_or_404(CustomUser, id=user_id)
@@ -89,8 +89,8 @@ def otp_verify(request):
                 return redirect('user_login')
 
             elif purpose == 'reset':
-                # ✅ Redirect to password reset form
-                request.session['reset_user_id'] = user.id  # For the password reset form
+              
+                request.session['reset_user_id'] = user.id  
                 return redirect('reset_password')
 
         else:
@@ -111,11 +111,11 @@ def resend_otp(request):
 
     user = get_object_or_404(CustomUser, id=user_id)
 
-    # Generate new OTP
+    
     otp = random.randint(100000, 999999)
     request.session['otp'] = str(otp)
 
-    # Send OTP
+    
     send_mail(
         subject='Noirmist - Your New OTP Code',
         message=f'Your new OTP is {otp}',
@@ -182,12 +182,12 @@ def home(request):
 
     banners = banner.objects.filter(start_date__lte=current_date, end_date__gte=current_date)
 
-    # Helper to attach main image to each product
+    
     def attach_main_image(products):
         for product in products:
             main_image = product.productimage_set.filter(is_main=True).first()
             product.main_image = main_image
-            # Add discounted price and percent
+            
             product.discount_percent = 10
             product.discounted_price = product.default_price * Decimal('0.9')
         return products
@@ -220,7 +220,7 @@ def user_logout(request):
     
     if request.method == 'POST':
         logout(request)
-        request.session.flush()  # Clears session data
+        request.session.flush() 
         return redirect('user_login')
     
 def forgot_password(request):
@@ -277,7 +277,7 @@ def reset_password(request):
             user.password = make_password(password1)
             user.save()
 
-            # Clean up session
+            
             request.session.pop('reset_user_id', None)
             request.session.pop('reset_otp', None)
 
@@ -297,12 +297,12 @@ def product_list(request):
     min_price = request.GET.get('min_price')
     max_price = request.GET.get('max_price')
     sort = request.GET.get('sort')
-    query = request.GET.get('q')  # Search term
+    query = request.GET.get('q') 
 
-    # Base query for products
+    
     products = Product.objects.filter(is_deleted=False, status='listed')
 
-    # Apply filters
+    
     if category_filter:
         products = products.filter(category_id__category_id__in=category_filter)
 
@@ -311,11 +311,11 @@ def product_list(request):
 
     if min_price and max_price:
         try:
-            min_price = float(min_price) / 0.9  # Convert discounted price to original price
-            max_price = float(max_price) / 0.9  # Convert discounted price to original price
+            min_price = float(min_price) / 0.9  
+            max_price = float(max_price) / 0.9  
             products = products.filter(variants__price__range=(min_price, max_price))
         except (ValueError, TypeError):
-            # Handle invalid input (e.g., non-numeric min_price/max_price)
+            
             pass
 
     if query:
@@ -325,29 +325,29 @@ def product_list(request):
             Q(brand_id__name__icontains=query)
         )
 
-    # Annotate with minimum variant price for sorting
+   
     products = products.annotate(min_price=Min('variants__price'))
 
-    # Sort based on min_price
+   
     if sort == 'price_asc':
         products = products.order_by('min_price')
     elif sort == 'price_desc':
         products = products.order_by('-min_price')
 
-    # Ensure distinct products
+
     products = products.distinct()
 
-    # Prefetch related data
+   
     products = products.prefetch_related(
         Prefetch('variants'),
         Prefetch('productimage_set', queryset=ProductImage.objects.filter(is_main=True), to_attr='main_images')
     )
 
-    # Attach discounted price and percent manually (based on min_price instead of default_price)
+    
     for product in products:
         discount = 10
         product.discount_percent = discount
-        # Use min_price for discount calculation
+       
         base_price = product.min_price if product.min_price is not None else product.default_price
         product.discounted_price = round(base_price * (100 - discount) / 100)
 
@@ -373,25 +373,25 @@ def product_detail(request, product_id):
     variants = product.variants.all()
     images = ProductImage.objects.filter(product_id=product)
 
-    # Default to the first variant or None if no variants exist
+    
     selected_variant = variants.first()
 
-    # Prepare variant data for the template
+    
     variant_data = [
         {
-            'size': str(variant.size),  # Ensure string for JavaScript
-            'price': float(variant.price),  # Convert Decimal to float
-            'stock': int(variant.stock),  # Ensure integer
-            'discounted_price': float(variant.price) * 0.9  # Convert Decimal to float before multiplication
+            'size': str(variant.size),  
+            'price': float(variant.price),  
+            'stock': int(variant.stock), 
+            'discounted_price': float(variant.price) * 0.9  
         }
         for variant in variants
     ]
 
-    # Initial price for display (based on selected_variant)
+   
     if selected_variant:
-        original_price = float(selected_variant.price)  # Convert Decimal to float
+        original_price = float(selected_variant.price)  
         discount_percent = 10
-        discounted_price = original_price * 0.9  # Now float * float
+        discounted_price = original_price * 0.9 
     else:
         original_price = discounted_price = discount_percent = None
 
@@ -403,6 +403,6 @@ def product_detail(request, product_id):
         'original_price': original_price,
         'discounted_price': discounted_price,
         'discount_percent': discount_percent,
-        'variant_data_json': json.dumps(variant_data),  # Serialize to JSON string
+        'variant_data_json': json.dumps(variant_data), 
     }
     return render(request, 'product_detail.html', context)

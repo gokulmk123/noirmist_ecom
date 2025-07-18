@@ -18,7 +18,7 @@
     <form method="post" class="space-y-6">
       {% csrf_token %}
 
-      <!-- Username -->
+      
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
         <input
@@ -33,7 +33,7 @@
         {% endif %}
       </div>
 
-      <!-- Email -->
+    
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
         <input
@@ -48,7 +48,7 @@
         {% endif %}
       </div>
 
-      <!-- Password -->
+    
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
         <input
@@ -62,12 +62,12 @@
         {% endif %}
       </div>
 
-      <!-- Submit Button -->
+     
       <button type="submit" class="w-full bg-gray-900 text-white py-2 rounded-md hover:bg-gray-800 transition">
         Login
       </button>
       <a href="{% url 'user_login' %}" class="underline text-black">user Log in</a>
-      <!-- Non-field errors (from clean method) -->
+      
       {% if form.non_field_errors %}
         <ul class="text-sm text-red-600 mt-4 list-disc list-inside">
           {% for error in form.non_field_errors %}

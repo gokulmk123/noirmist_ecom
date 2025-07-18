@@ -5,7 +5,7 @@
 
 {% block content %}
 
-<!-- Top Hero Banner -->
+
 <section class="relative w-full h-[500px]">
   {% if banners %}
     <img src="{{ banners.0.banner_img.url }}" alt="Hero Banner"
@@ -27,7 +27,7 @@
   </div>
 </section>
 
-<!-- Fresh Arrivals -->
+
 <section class="bg-gray-950 text-white py-12">
   <div class="max-w-7xl mx-auto px-4">
     <h3 class="text-2xl font-semibold mb-6">Fresh Arrivals</h3>
@@ -71,10 +71,10 @@
   </div>
 </section>
 
-<!-- Mid Banner -->
 
 
-<!-- Best Selling -->
+
+
 <section class="bg-gray-950 text-white py-12">
   <div class="max-w-7xl mx-auto px-4">
     <h3 class="text-2xl font-semibold mb-6">Best Selling</h3>
@@ -111,7 +111,7 @@
   </div>
 </section>
 
-<!-- Recommended Products -->
+
 <section class="bg-gray-950 text-white py-12">
   <div class="max-w-7xl mx-auto px-4">
     <h3 class="text-2xl font-semibold mb-6">Recommended For You</h3>
@@ -152,14 +152,14 @@
   <section class="bg-black text-white py-10">
     <div class="max-w-5xl mx-auto px-4 relative">
 
-      <!-- Banner Image -->
+      
       <img src="{{ banners.1.banner_img.url }}" alt="Mid Banner"
            class="w-full rounded-lg object-cover opacity-90">
 
-      <!-- Full Black Overlay -->
+      
       <div class="absolute inset-0 bg-gradient-to-r from-black/80 to-black/30 rounded-lg"></div>
 
-      <!-- Banner Text -->
+     
       <div class="absolute inset-0 flex items-center px-10">
         <h2 class="text-5xl md:text-6xl font-extrabold text-white tracking-wide leading-tight drop-shadow-xl italic">
           {{ banners.1.banner_name }}
