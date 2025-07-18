@@ -166,6 +166,7 @@ def addproduct(request):
     if request.method == 'POST':
         name = request.POST.get('name', '').strip()
 
+        # Name validation
         if not name:
             messages.error(request, 'Product name is required.')
             return redirect(f"{request.path}?edit={edit_id}" if edit_id else request.path)
@@ -174,6 +175,7 @@ def addproduct(request):
             messages.error(request, 'Product name already exists.')
             return redirect(request.path)
 
+        # Category validation
         try:
             category_id = int(request.POST.get('category_id'))
             category = Category.objects.get(category_id=category_id, is_deleted=False, status='Listed')
@@ -181,6 +183,7 @@ def addproduct(request):
             messages.error(request, 'Please select a valid category.')
             return redirect(f"{request.path}?edit={edit_id}" if edit_id else request.path)
 
+        # Brand validation
         try:
             brand_id = int(request.POST.get('brand_id'))
             brand = Brand.objects.get(brand_id=brand_id, is_deleted=False, status='Listed')
@@ -190,6 +193,7 @@ def addproduct(request):
 
         description = request.POST.get('description', '')
 
+        # Create or update product
         if edit_id:
             product.name = name
             product.description = description
@@ -207,37 +211,64 @@ def addproduct(request):
                 brand_id=brand,
             )
 
+        # Delete old variants on edit
         if edit_id:
             ProductVariant.objects.filter(product_id=product).delete()
 
+        # --- Variant Validation ---
         variants_input = request.POST.getlist('variants[]')
+        valid_variants = []
+
         for variant in variants_input:
             try:
                 size, price, stock = variant.split('|')
-                ProductVariant.objects.create(
-                    product_id=product,
-                    size=size.strip(),
-                    price=float(price),
-                    stock=int(stock)
-                )
+                size = size.strip()
+                price = float(price)
+                stock = int(stock)
+
+                if not size or price < 0 or stock < 0:
+                    raise ValueError("Invalid variant values")
+
+                valid_variants.append({
+                    'size': size,
+                    'price': price,
+                    'stock': stock
+                })
+
             except Exception as e:
                 print('Variant error:', e)
+                messages.error(request, 'One or more product variants are invalid. Please check the inputs.')
+                return redirect(f"{request.path}?edit={edit_id}" if edit_id else request.path)
 
+        if not valid_variants:
+            messages.error(request, 'At least one valid variant is required.')
+            return redirect(f"{request.path}?edit={edit_id}" if edit_id else request.path)
+
+        for var in valid_variants:
+            ProductVariant.objects.create(
+                product_id=product,
+                size=var['size'],
+                price=var['price'],
+                stock=var['stock']
+            )
+
+        # --- Save Images ---
         images = request.FILES.getlist('variantImages')
-        
         for idx, img in enumerate(images):
             ProductImage.objects.create(
-            product_id=product,
-            image=img,
-            alt_text=f"{name} - Main",
-            is_main=(idx == 0)  
+                product_id=product,
+                image=img,
+                alt_text=f"{name} - Image {idx + 1}",
+                is_main=(idx == 0)
             )
 
         messages.success(request, 'Product saved successfully.')
         return redirect('admin_product')
 
+    # --- Load form ---
     categories = Category.objects.filter(is_deleted=False, status='Listed')
     brands = Brand.objects.filter(is_deleted=False, status='Listed')
+
     return render(request, 'admin_addproduct.html', {
         'categories': categories,
         'brands': brands,
@@ -245,6 +276,7 @@ def addproduct(request):
         'variants': variants,
         'is_edit': bool(edit_id),
     })
+
 def get_form_context(product, variants, edit_id):
     return {
         'categories': Category.objects.filter(is_deleted=False, status='Listed'),

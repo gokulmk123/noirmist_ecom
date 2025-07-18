@@ -49,10 +49,19 @@
           <span id="original-price" class="text-gray-400 line-through ml-2">₹{{ original_price }}</span>
           <span id="discount-percent" class="text-green-400 ml-1">({{ discount_percent }}% OFF)</span>
         </p>
-        <p class="text-sm text-gray-400">Stock: <span id="stock">{{ selected_variant.stock }}</span></p>
+
+        {% if selected_variant.stock <= 0  %}
+          <p class="text-sm text-gray-400">Stock: <span id="stock">out of stock</span></p>
+        {% elif selected_variant.stock  > 10 %}
+          <p class="text-sm text-gray-400">Stock: <span id="stock">available</span></p>
+        {% else %}
+          <p class="text-sm text-gray-400">Stock: <span id="stock">{{ selected_variant.stock }}</span></p>
+        {% endif %}
+
       {% else %}
         <p class="text-sm text-gray-400">No variants available.</p>
       {% endif %}
+
       <div>
         <label for="size" class="block text-sm font-medium text-gray-300">Select Size:</label>
         <select id="size" name="size" class="mt-1 block w-1/2 px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white">
