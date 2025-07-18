@@ -79,7 +79,7 @@
 
         <div class="mb-3">
             <label class="block text-sm mb-1">Size</label>
-            <input type="text" id="variantSize" class="w-full border rounded px-3 py-2" />
+            <input type="number" id="variantSize"  min="0" step="1" class="w-full border rounded px-3 py-2" />
         </div>
         <div class="mb-3">
             <label class="block text-sm mb-1">Price</label>
@@ -91,7 +91,7 @@
         </div>
 
         <div class="mb-3">
-            <label class="block text-sm mb-1">Upload Images (3–4)</label>
+            <label class="block text-sm mb-1">Upload Images (3–5)</label>
             <input type="file" id="variantImageInput" accept="image/*" multiple class="w-full" />
             <div id="imagePreview" class="flex flex-wrap mt-2 gap-2"></div>
         </div>
@@ -257,6 +257,11 @@
         // Client-side validation
         if (!size) {
             alert("Size is required.");
+            return;
+        }
+
+        if (isNaN(size) || size < 0) {
+            alert("size must be a non-negative number.");
             return;
         }
         if (isNaN(price) || price < 0) {

@@ -9,7 +9,7 @@
     <a href="{% url 'admin_dashboard' %}" class="text-gray-500 hover:text-gray-700">Dashboard &gt;</a>
     <span class="text-gray-800 font-semibold">Customer</span>
   </div>
-<!-- Search Bar -->
+<!-- search bar -->
 <form method="GET" class="mb-6 flex justify-end mt-10">
   <input type="text" name="q" placeholder="Search by name or email"
          value="{{ search_query }}"
@@ -20,7 +20,7 @@
   </button>
 </form>
 
-<!-- Customer List Table -->
+<!-- customer list table -->
 <div class="bg-white p-6 rounded-lg shadow mt-4">
   <h2 class="text-xl font-semibold mb-4">Customer List</h2>
   <table class="min-w-full table-auto text-sm">
@@ -45,7 +45,7 @@
           {% endif %}
         </td>
         <td>
-          <!-- Trigger Button -->
+          <!-- trigger button -->
           <button 
             type="button" 
             onclick="openModal('{{ user.id }}', '{{ user.is_active }}')" 

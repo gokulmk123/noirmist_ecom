@@ -20,19 +20,13 @@ from django.core.paginator import Paginator
 
 @never_cache
 def admin_login_view(request):
-    if request.user.is_authenticated and not request.user.is_superuser:
-        return redirect('user_login')
-    
-    if request.user.is_authenticated and request.user.is_superuser:
+    if  request.session.get('adminuser'):
         return redirect('admin_dashboard')
-
     
-
     if request.method == 'POST':
         form = AdminLoginForm(request.POST)
         if form.is_valid():
             user = form.user
-            # 🛠️ Set the backend manually
             backends = get_backends()
             user.backend = f"{backends[0].__module__}.{backends[0].__class__.__name__}"
 
@@ -46,13 +40,19 @@ def admin_login_view(request):
 
 @never_cache
 def admin_logout(request):
+    
+    if  request.session.get('adminuser'):
+        return redirect('admin_dashboard')
+
     if request.method == 'POST':
         logout(request)
-        request.session.flush()  # Clears session data
+        request.session.flush()  
         return redirect('admin_login')
 
 @never_cache
 def admin_dashboard(request):
+   
+
     if request.session.get('user'):
         return redirect('home')
     if not request.session.get('adminuser'):
@@ -70,8 +70,7 @@ def admin_dashboard(request):
 def admin_customers_view(request):
     if not request.session.get('adminuser'):
         return redirect('admin_login')
-
-    # Toggle block/unblock
+    # toogle used for block and unblock the user 
     if request.method == 'POST':
         user_id = request.POST.get('user_id')
         user = get_object_or_404(CustomUser, id=user_id, is_superuser=False)
@@ -79,7 +78,7 @@ def admin_customers_view(request):
         user.save()
         return redirect('admin_customers')
 
-    # Search
+    # search for user
     query = request.GET.get('q', '')
     customers = CustomUser.objects.filter(is_superuser=False)
     if query:
@@ -88,15 +87,15 @@ def admin_customers_view(request):
             Q(email__icontains=query)
         )
 
-    # ✅ Pagination
-    paginator = Paginator(customers, 10)  # 10 customers per page
+    #  pagination
+    paginator = Paginator(customers, 10)  
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
     return render(request, 'admin_customer.html', {
         'customers': page_obj,
         'search_query': query,
-        'page_obj': page_obj,  # Needed for pagination template logic
+        'page_obj': page_obj, 
     })
 
 @never_cache
@@ -114,7 +113,7 @@ def admin_product(request):
             Q(name__icontains=search_query) | Q(description__icontains=search_query)
         )
 
-    #  Assign main image BEFORE pagination
+    
     product_list = []
     for product in products:
         main_image = product.productimage_set.filter(is_main=True).first()
@@ -123,8 +122,8 @@ def admin_product(request):
         product.main_image = main_image
         product_list.append(product)
 
-    # Pagination
-    paginator = Paginator(product_list, 10)  # 10 per page
+   
+    paginator = Paginator(product_list, 10) 
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
@@ -134,14 +133,20 @@ def admin_product(request):
         'search_query': search_query,
         'show_deleted': show_deleted
     })
-
+@never_cache
 def toggle_product_status(request, product_id):
+
+    if not request.session.get('adminuser'):
+        return redirect('admin_login')
     product = get_object_or_404(Product, id=product_id)
     product.status = 'unlisted' if product.status == 'listed' else 'listed'
     product.save()
     return redirect('admin_product')
-
+@never_cache
 def delete_product(request, product_id):
+
+    if not request.session.get('adminuser'):
+        return redirect('admin_login')
     product = get_object_or_404(Product, id=product_id)
     product.is_deleted = True
     product.status = 'unlisted'
@@ -149,12 +154,16 @@ def delete_product(request, product_id):
     return redirect('admin_product')
 
 def recover_product(request, product_id):
+    if not request.session.get('adminuser'):
+        return redirect('admin_login')
     product = get_object_or_404(Product, id=product_id, is_deleted=True)
     product.is_deleted = False
     product.save()
     return redirect('admin_product')
-
+@never_cache
 def addproduct(request):
+    if not request.session.get('adminuser'):
+        return redirect('admin_login')
     edit_id = request.GET.get('edit') or request.POST.get('edit')
     product = None
     variants = []
@@ -166,7 +175,7 @@ def addproduct(request):
     if request.method == 'POST':
         name = request.POST.get('name', '').strip()
 
-        # Name validation
+        
         if not name:
             messages.error(request, 'Product name is required.')
             return redirect(f"{request.path}?edit={edit_id}" if edit_id else request.path)
@@ -174,8 +183,8 @@ def addproduct(request):
         if not edit_id and Product.objects.filter(name__iexact=name).exists():
             messages.error(request, 'Product name already exists.')
             return redirect(request.path)
-
-        # Category validation
+# ////////////////////////////////category 
+        
         try:
             category_id = int(request.POST.get('category_id'))
             category = Category.objects.get(category_id=category_id, is_deleted=False, status='Listed')
@@ -183,7 +192,7 @@ def addproduct(request):
             messages.error(request, 'Please select a valid category.')
             return redirect(f"{request.path}?edit={edit_id}" if edit_id else request.path)
 
-        # Brand validation
+        # //////////////////////////////////brand
         try:
             brand_id = int(request.POST.get('brand_id'))
             brand = Brand.objects.get(brand_id=brand_id, is_deleted=False, status='Listed')
@@ -193,7 +202,7 @@ def addproduct(request):
 
         description = request.POST.get('description', '')
 
-        # Create or update product
+       
         if edit_id:
             product.name = name
             product.description = description
@@ -211,7 +220,7 @@ def addproduct(request):
                 brand_id=brand,
             )
 
-        # Delete old variants on edit
+       
         if edit_id:
             ProductVariant.objects.filter(product_id=product).delete()
 
@@ -222,12 +231,17 @@ def addproduct(request):
         for variant in variants_input:
             try:
                 size, price, stock = variant.split('|')
-                size = size.strip()
+                size = int(size)
                 price = float(price)
                 stock = int(stock)
 
-                if not size or price < 0 or stock < 0:
-                    raise ValueError("Invalid variant values")
+                if size < 0:
+                    raise ValueError("Size must be non-negative")
+
+                if price < 0:
+                    raise ValueError("Price must be non-negative")
+                if stock < 0:
+                    raise ValueError("Stock must be non-negative")
 
                 valid_variants.append({
                     'size': size,
@@ -278,6 +292,7 @@ def addproduct(request):
     })
 
 def get_form_context(product, variants, edit_id):
+    
     return {
         'categories': Category.objects.filter(is_deleted=False, status='Listed'),
         'brands': Brand.objects.filter(is_deleted=False, status='Listed'),
@@ -285,8 +300,10 @@ def get_form_context(product, variants, edit_id):
         'variants': variants,
         'is_edit': bool(edit_id),
     }
-
+@never_cache
 def admin_category(request):
+    if not request.session.get('adminuser'):
+        return redirect('admin_login')
     if request.method == 'POST':
         if 'edit_category_id' in request.POST:
             category_id = request.POST.get('edit_category_id')
@@ -349,8 +366,10 @@ def delete_category(request, category_id):
     return redirect('admin_category')
 
 
-
+@never_cache
 def admin_brand(request):
+    if not request.session.get('adminuser'):
+        return redirect('admin_login')
     if request.method == 'POST':
         brand_id = request.POST.get('brand_id')
         name = request.POST.get('name')
